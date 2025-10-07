@@ -17,7 +17,7 @@
     "appwrite": "^13.0.0",
     "axios": "^1.7.0",
     "babel-preset-expo": "~54.0.0",
-    "expo": "^54",
+    "expo": "^54.0.12",
     "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "~3.0.8",
     "react": "19.1.0",
