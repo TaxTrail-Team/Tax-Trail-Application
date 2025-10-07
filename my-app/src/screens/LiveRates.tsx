@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   nowValue: { color: "#000000ff", fontWeight: "900", fontSize: 22, marginTop: 4 },
   nowMeta: { color: "#000000ff", marginTop: 4 },
 
-  empty: { color: "#9ca3af", textAlign: "center", marginTop: 20 },
+  empty: { color: "#000000ff", textAlign: "center", marginTop: 20 },
 
   row: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 8 },
   rowTime: { color: "#000000ff", width: 90 },
