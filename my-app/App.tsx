@@ -27,11 +27,11 @@ function TabsNav() {
   return (
     <Tabs.Navigator>
       <Tabs.Screen name="Home" component={Home} />
-      <Tabs.Screen name="Profile" component={Profile} />
       <Tabs.Screen name="Converter" component={Converter} />
-      <Tabs.Screen name="More1">{() => <Placeholder title="More 1" />}</Tabs.Screen>
-      <Tabs.Screen name="More2">{() => <Placeholder title="More 2" />}</Tabs.Screen>
-      <Tabs.Screen name="More3">{() => <Placeholder title="More 3" />}</Tabs.Screen>
+      <Tabs.Screen name="budget br">{() => <Placeholder title="More 1" />}</Tabs.Screen>
+      <Tabs.Screen name="anomaly">{() => <Placeholder title="More 2" />}</Tabs.Screen>
+      <Tabs.Screen name="prediction">{() => <Placeholder title="More 3" />}</Tabs.Screen>
+      <Tabs.Screen name="Profile" component={Profile} />
     </Tabs.Navigator>
   );
 }
