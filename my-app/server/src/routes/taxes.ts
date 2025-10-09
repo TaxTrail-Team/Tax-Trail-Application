@@ -104,6 +104,20 @@ router.post("/agent", async (req, res) => {
     return res.status(200).json({ output: { target: null, items: [], error: e?.message || "agent failed" } });
   }
 });
+router.get("/years", async (_req, res) => {
+  try {
+    const resp = await db.listDocuments(DB_ID, TAXES, [Query.limit(100)]);
+
+    const years = resp.documents
+      .map((doc: any) => doc.year)
+      .filter((year: any): year is number => typeof year === "number");
+
+    const uniqueYears = Array.from(new Set(years)).sort((a, b) => b - a); // newest first
+    res.json(uniqueYears);
+  } catch (e: any) {
+    res.status(500).json({ error: e?.message || "Failed to fetch years" });
+  }
+});
 
 // /convert (simple)
 router.post("/convert", async (req, res) => {

@@ -22,6 +22,11 @@ export async function pingServer() {
     return false;
   }
 }
+export async function fetchYears(): Promise<number[]> {
+  const { data } = await api.get("/years");
+  console.log("[API] /years =>", data);
+  return data;
+}
 
 export async function agentConvert(input: string) {
   try {
