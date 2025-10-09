@@ -13,6 +13,7 @@ import Home from './src/screens/Home';
 import Profile from './src/screens/Profile';
 import Converter from './src/screens/Converter';
 import LiveRates from './src/screens/LiveRates';
+import BudgetDashboard from './src/screens/BudgetDashboard';
 
 const Stack = createNativeStackNavigator();
 const Tabs = createBottomTabNavigator();
@@ -29,7 +30,7 @@ function TabsNav() {
       <Tabs.Screen name="Home" component={Home} />
       <Tabs.Screen name="Profile" component={Profile} />
       <Tabs.Screen name="Converter" component={Converter} />
-      <Tabs.Screen name="More1">{() => <Placeholder title="More 1" />}</Tabs.Screen>
+      <Tabs.Screen name="Budget" component={BudgetDashboard} />
       <Tabs.Screen name="More2">{() => <Placeholder title="More 2" />}</Tabs.Screen>
       <Tabs.Screen name="More3">{() => <Placeholder title="More 3" />}</Tabs.Screen>
     </Tabs.Navigator>

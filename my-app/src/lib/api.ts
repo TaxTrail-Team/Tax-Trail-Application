@@ -3,7 +3,7 @@ import axios from "axios";
 
 // 1) Make sure this is your machine's LAN IP the phone can reach.
 //    Try `ipconfig` (Windows) or `ifconfig` (Mac) and pick the Wi-Fi IPv4.
-export const SERVER = "http://192.168.1.4:3001";
+export const SERVER = "http://192.168.222.80:3001";
 
 // Use a client with sane defaults + timeout.
 const api = axios.create({
