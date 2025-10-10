@@ -6,18 +6,27 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
-    
-    "userInterfaceStyle": "automatic",         
-    "ios": { "supportsTablet": true },
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff",
-        "package": "com.taxtrail.app" 
+        "package": "com.taxtrail.app"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.kusalya.myapp"
     },
-    "web": { "bundler": "metro" },
-    "plugins": []
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "a9c2b847-af42-436c-b644-7d689c5bfe5c"
+      }
+    }
   }
 }
