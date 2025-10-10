@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsc",
+    "build": "node --max-old-space-size=2048 ./node_modules/typescript/bin/tsc",
     "start": "node dist/index.js"
   },
   "keywords": [],
