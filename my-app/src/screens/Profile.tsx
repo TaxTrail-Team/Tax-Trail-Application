@@ -46,7 +46,7 @@ export default function Profile() {
     <ScrollView style={{ flex: 1, backgroundColor: "#f9fafb" }}>
       {/* Header with gradient */}
       <LinearGradient
-        colors={["#2563eb", "#1e3a8a"]}
+        colors={["#7d8697ff", "#303541ff"]}
         style={{
           height: 220,
           borderBottomLeftRadius: 30,
@@ -122,7 +122,7 @@ export default function Profile() {
               <TouchableOpacity
                 onPress={handleSave}
                 style={{
-                  backgroundColor: "#2563eb",
+                  backgroundColor: "#333947ff",
                   padding: 12,
                   borderRadius: 8,
                   alignItems: "center",
@@ -159,7 +159,7 @@ export default function Profile() {
               <TouchableOpacity
                 onPress={() => setIsEditing(true)}
                 style={{
-                  backgroundColor: "#2563eb",
+                  backgroundColor: "#3d4149ff",
                   padding: 12,
                   borderRadius: 8,
                   alignItems: "center",
