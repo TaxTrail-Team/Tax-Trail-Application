@@ -3,6 +3,8 @@ import axios from "axios";
 
 // 1) Make sure this is your machine's LAN IP the phone can reach.
 //    Try `ipconfig` (Windows) or `ifconfig` (Mac) and pick the Wi-Fi IPv4.
+// NOTE: remove extra spaces so the device can reach the development server.
+
 export const SERVER = "http://192.168.222.80:3001";
 
 // Use a client with sane defaults + timeout.
@@ -36,9 +38,15 @@ export async function agentConvert(input: string) {
 
 // If your backend returns an array of strings, this is fine.
 export async function fetchCategories() {
-  const { data } = await api.get<string[]>("/categories");
-  console.log("[API] /categories =>", data);
-  return data;
+  try {
+    const { data } = await api.get<string[]>('/categories');
+    console.log('[API] /categories =>', data);
+    return Array.isArray(data) ? data : [];
+  } catch (e: any) {
+    console.log("[API] /categories error:", e?.message);
+    // Return an empty array so UI can show fallback categories and not crash.
+    return [] as string[];
+  }
 }
 
 /** UI tax shape (post-mapped on server) */
@@ -53,11 +61,15 @@ export type UITax = {
 };
 
 export async function fetchTaxes(params: {
-  category?: string;
-  year?: number;
+  category?: string | string[];
+  year?: number | number[];
   amount?: number;
 } = {}) {
-  const { data } = await api.get("/taxes", { params });
+  // If arrays are provided, serialize them to comma-separated strings for the server
+  const q: any = { ...params };
+  if (Array.isArray(params.category)) q.category = params.category.join(',');
+  if (Array.isArray(params.year)) q.year = params.year.join(',');
+  const { data } = await api.get("/taxes", { params: q });
   console.log("[API] /taxes raw =>", data);
   // Server already maps, but keep this defensive:
   const mapped: UITax[] = (Array.isArray(data) ? data : []).map((d: any) => ({

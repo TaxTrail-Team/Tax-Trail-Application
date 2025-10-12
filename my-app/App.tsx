@@ -14,6 +14,8 @@ import Profile from './src/screens/Profile';
 import Converter from './src/screens/Converter';
 import LiveRates from './src/screens/LiveRates';
 import BudgetDashboard from './src/screens/BudgetDashboard';
+import BudgetFilter from './src/screens/BudgetFilter';
+import CategoryOverview from './src/screens/CategoryOverview';
 
 const Stack = createNativeStackNavigator();
 const Tabs = createBottomTabNavigator();
@@ -27,6 +29,7 @@ function TabsNav() {
 
   return (
     <Tabs.Navigator>
+     
       <Tabs.Screen name="Home" component={Home} />
       <Tabs.Screen name="Profile" component={Profile} />
       <Tabs.Screen name="Converter" component={Converter} />
@@ -68,11 +71,21 @@ export default function App() {
           <>
             {/* Tabs at the bottom */}
             <Stack.Screen name="Tabs" component={TabsNav} />
-            {/* LiveRates sits in the ROOT stack so any tab can push it */}
+            {/* Extra screens on ROOT stack so any tab can push them */}
             <Stack.Screen
               name="LiveRates"
               component={LiveRates}
               options={{ headerShown: true, title: 'Live Rate Changes' }}
+            />
+            <Stack.Screen
+              name="BudgetFilter"
+              component={BudgetFilter}
+              options={{ headerShown: true, title: 'Filters' }}
+            />
+            <Stack.Screen
+              name="CategoryOverview"
+              component={CategoryOverview}
+              options={{ headerShown: true, title: 'Overview' }}
             />
           </>
         )}
