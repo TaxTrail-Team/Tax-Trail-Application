@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 import path from "path";
 
-// Load .env from the root of the project directory
+
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+
 
 export const ENV = {
   PORT: process.env.PORT || "3001",
@@ -17,4 +18,5 @@ export const ENV = {
   APPWRITE_TAXES_COLLECTION_ID: process.env.APPWRITE_TAXES_COLLECTION_ID || "",
 
   SERPAPI_API_KEY: process.env.SERPAPI_API_KEY || "",
+
 };

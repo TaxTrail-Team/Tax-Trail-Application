@@ -3,9 +3,13 @@ import axios from "axios";
 
 // 1) Make sure this is your machine's LAN IP the phone can reach.
 //    Try `ipconfig` (Windows) or `ifconfig` (Mac) and pick the Wi-Fi IPv4.
+
 // NOTE: remove extra spaces so the device can reach the development server.
 
-export const SERVER = "http://192.168.222.80:3001";
+
+export const SERVER = "http://172.30.48.1:3001";
+// https://tax-trail-application.onrender.com
+//http:// 172.30.48.1:3001
 
 // Use a client with sane defaults + timeout.
 const api = axios.create({
@@ -23,6 +27,11 @@ export async function pingServer() {
     console.log("[API] /health error:", e?.message);
     return false;
   }
+}
+export async function fetchYears(): Promise<number[]> {
+  const { data } = await api.get("/years");
+  console.log("[API] /years =>", data);
+  return data;
 }
 
 export async function agentConvert(input: string) {
@@ -152,6 +161,81 @@ export async function fetchAllLiveRatesGoogle(params: {
     count: number;
     items: Array<{ target: string; rate: number; via: "google"; source?: string; rate_ts: string }>;
   };
+}
+
+// AI-Powered Anomaly Analysis
+export type AIAnomalyInsights = {
+  insights: Array<{
+    year: number;
+    explanation: string;
+    severity: "low" | "medium" | "high";
+    recommendedActions: string[];
+  }>;
+  overallTrend: string;
+  prediction: {
+    nextYear: number;
+    confidence: "low" | "medium" | "high";
+    reasoning: string;
+  };
+  keyFindings: string[];
+  risks: string[];
+  opportunities: string[];
+};
+
+export async function fetchAIAnomalyInsights(params: {
+  yearlyData: Array<{
+    year: number;
+    total: number;
+    count: number;
+    percentChange: number;
+    deviation: number;
+    isHighAnomaly: boolean;
+    isLowAnomaly: boolean;
+  }>;
+  mean: number;
+  deviationThreshold: number;
+  category?: string;
+}): Promise<AIAnomalyInsights> {
+  try {
+    console.log("[fetchAIAnomalyInsights] Sending request...");
+    console.log("[fetchAIAnomalyInsights] Params:", {
+      dataPoints: params.yearlyData.length,
+      mean: params.mean,
+      threshold: params.deviationThreshold,
+      category: params.category
+    });
+
+    const { data } = await api.post("/anomaly/ai-insights", params);
+    console.log("[fetchAIAnomalyInsights] Response received");
+    return data.insights;
+  } catch (error: any) {
+    console.error("[fetchAIAnomalyInsights] Error:", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.error || error.message || "AI analysis failed");
+  }
+}
+
+export async function fetchExecutiveSummary(params: {
+  yearlyData: Array<{ year: number; total: number; count: number }>;
+  mean: number;
+  topAnomalies: Array<{ year: number; type: string; deviation: number }>;
+  category?: string;
+}): Promise<string> {
+  try {
+    console.log("[fetchExecutiveSummary] Sending request...");
+    console.log("[fetchExecutiveSummary] Params:", {
+      dataPoints: params.yearlyData.length,
+      mean: params.mean,
+      anomalies: params.topAnomalies.length,
+      category: params.category
+    });
+
+    const { data } = await api.post("/anomaly/executive-summary", params);
+    console.log("[fetchExecutiveSummary] Response received");
+    return data.summary;
+  } catch (error: any) {
+    console.error("[fetchExecutiveSummary] Error:", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.error || error.message || "Summary generation failed");
+  }
 }
 
 
