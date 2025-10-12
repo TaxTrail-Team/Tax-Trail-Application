@@ -1,10 +1,20 @@
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+
+
 export const ENV = {
-    PORT:3001,
-APPWRITE_ENDPOINT:"https://nyc.cloud.appwrite.io/v1",
-APPWRITE_PROJECT_ID:'68dcab440025ead1fabe',
-APPWRITE_API_KEY:"standard_9cbb8f0134b7566d3f340c3a86c6d3c0d4e897a0f51b3b13c72ae3d724d33f13e58f003a65cb79eae8497a633e19b632fa2b5274613a9a00a6087ad1182f53272057150614d9a40cd44e6a9630bfffbf1bd7fb736e77c5769091cd1f9b2f47ba4101b6d7aaa50720bb0d9d7b927300e66304f01cf0ac60f93c0ec95dc28335c4",
-APPWRITE_DB_ID:'68dcb2500034824a422c',
-APPWRITE_PROJECT_NAME : "tax_transparency",
-APPWRITE_TAXES_COLLECTION_ID:'taxes',
-SERPAPI_API_KEY:"fa27bdab1ca7654133eb19ba5377e0dc7d7fbf2f"
-}
+  PORT: process.env.PORT || "3001",
+
+  GROQ_API_KEY: process.env.GROQ_API_KEY || "",
+
+  APPWRITE_ENDPOINT: process.env.APPWRITE_ENDPOINT || "",
+  APPWRITE_PROJECT_ID: process.env.APPWRITE_PROJECT_ID || "",
+  APPWRITE_PROJECT_NAME: process.env.APPWRITE_PROJECT_NAME || "",
+  APPWRITE_API_KEY: process.env.APPWRITE_API_KEY || "",
+  APPWRITE_DB_ID: process.env.APPWRITE_DB_ID || "",
+  APPWRITE_TAXES_COLLECTION_ID: process.env.APPWRITE_TAXES_COLLECTION_ID || "",
+
+  SERPAPI_API_KEY: process.env.SERPAPI_API_KEY || "",
+};

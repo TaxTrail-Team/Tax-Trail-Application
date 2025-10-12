@@ -3,8 +3,9 @@ import axios from "axios";
 
 // 1) Make sure this is your machine's LAN IP the phone can reach.
 //    Try `ipconfig` (Windows) or `ifconfig` (Mac) and pick the Wi-Fi IPv4.
-export const SERVER = "http://192.168.1.4:3001";
-
+export const SERVER = "https://tax-trail-application.onrender.com";
+// https://tax-trail-application.onrender.com
+// http://192.168.1.4:3001
 // Use a client with sane defaults + timeout.
 const api = axios.create({
   baseURL: SERVER,
@@ -21,6 +22,11 @@ export async function pingServer() {
     console.log("[API] /health error:", e?.message);
     return false;
   }
+}
+export async function fetchYears(): Promise<number[]> {
+  const { data } = await api.get("/years");
+  console.log("[API] /years =>", data);
+  return data;
 }
 
 export async function agentConvert(input: string) {
