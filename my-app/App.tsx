@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, Image } from 'react-native';
 
 import { useAuth } from './src/store/useAuth';
 import Onboarding from './src/screens/OnBoarding';
@@ -13,6 +13,13 @@ import Home from './src/screens/Home';
 import Profile from './src/screens/Profile';
 import Converter from './src/screens/Converter';
 import LiveRates from './src/screens/LiveRates';
+import home from './src/assets/home.png';
+import converter from './src/assets/converter.png';
+import budget from './src/assets/budget.png';
+import anomaly from './src/assets/anomaly.png';
+import prediction from './src/assets/prediction.png';
+import profile from './src/assets/profile.png';
+
 
 import PredictionScreen from "./src/screens/PredictionScreen";
 import SummaryScreen from "./src/screens/SummaryScreen";
@@ -22,6 +29,30 @@ const Stack = createNativeStackNavigator();
 const Tabs = createBottomTabNavigator();
 const Stack2 = createNativeStackNavigator<RootStackParamList>();
 
+// NEW CODE
+const PredictionStack = createNativeStackNavigator();
+
+function PredictionStackNavigator() {
+  return (
+    <PredictionStack.Navigator>
+      <PredictionStack.Screen
+        name="PredictionScreen"
+        component={PredictionScreen}
+        options={{ headerShown: false }}
+      />
+      <PredictionStack.Screen
+        name="SummaryScreen"
+        component={SummaryScreen}
+        options={{
+          presentation: "modal",
+          headerShown: true,
+          title: "AI Summary",
+        }}
+      />
+    </PredictionStack.Navigator>
+  );
+}
+
 function TabsNav() {
   const Placeholder = ({ title }: { title: string }) => (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -30,15 +61,84 @@ function TabsNav() {
   );
 
   return (
-    <Tabs.Navigator>
-      {/* <Tabs.Screen name="Home" component={Home} /> */}
-      <Tabs.Screen name="Profile" component={Profile} />
-      {/* <Tabs.Screen name="Converter" component={Converter} /> */}
-      <Tabs.Screen name="Predictions" component={PredictionScreen} />
-      <Stack2.Screen name="SummaryScreen" component={SummaryScreen} options={{ presentation: "modal", headerShown: true }}/>
-      <Tabs.Screen name="More2">{() => <Placeholder title="More 2" />}</Tabs.Screen>
-      <Tabs.Screen name="More3">{() => <Placeholder title="More 3" />}</Tabs.Screen>
-    </Tabs.Navigator>
+   <Tabs.Navigator screenOptions={{ headerShown: true }}>
+  {/* <Tabs.Screen
+    name="Home"
+    component={Home}
+    options={{
+      tabBarIcon: ({ focused }) => (
+        <Image
+          source={require('./src/assets/home.png')}
+          style={{ width: 24, height: 24, tintColor: focused ? '#22c55e' : '#555' }}
+        />
+      ),
+    }}
+  /> */}
+  <Tabs.Screen
+    name="Converter"
+    component={Converter}
+    options={{
+      tabBarIcon: ({ focused }) => (
+        <Image
+          source={require('./src/assets/converter.png')}
+          style={{ width: 24, height: 24, tintColor: focused ? '#22c55e' : '#555' }}
+        />
+      ),
+    }}
+  />
+  <Tabs.Screen
+    name="budget br"
+    children={() => <Placeholder title="More 1" />}
+    options={{
+      tabBarIcon: ({ focused }) => (
+        <Image
+          source={require('./src/assets/budget.png')}
+          style={{ width: 24, height: 24, tintColor: focused ? '#22c55e' : '#555' }}
+        />
+      ),
+    }}
+  />
+  <Tabs.Screen
+    name="anomaly"
+    children={() => <Placeholder title="More 2" />}
+    options={{
+      tabBarIcon: ({ focused }) => (
+        <Image
+          source={require('./src/assets/anomaly.png')}
+          style={{ width: 24, height: 24, tintColor: focused ? '#22c55e' : '#555' }}
+        />
+      ),
+    }}
+  />
+  {/* OLD CODE */}
+  {/* <Tabs.Screen name="Predictions" component={PredictionScreen} />
+      <Stack2.Screen name="SummaryScreen" component={SummaryScreen} options={{ presentation: "modal", headerShown: true }}/> */}
+  <Tabs.Screen
+    name="prediction"
+    component={PredictionStackNavigator}
+    options={{
+      tabBarIcon: ({ focused }) => (
+        <Image
+          source={require('./src/assets/prediction.png')}
+          style={{ width: 24, height: 24, tintColor: focused ? '#22c55e' : '#555' }}
+        />
+      ),
+    }}
+  />
+  <Tabs.Screen
+    name="Profile"
+    component={Profile}
+    options={{
+      tabBarIcon: ({ focused }) => (
+        <Image
+          source={require('./src/assets/profile.png')}
+          style={{ width: 24, height: 24, tintColor: focused ? '#22c55e' : '#555' }}
+        />
+      ),
+    }}
+  />
+</Tabs.Navigator>
+
   );
 }
 

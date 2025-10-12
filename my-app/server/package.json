@@ -1,16 +1,17 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "type": "commonjs",
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsc",
+    "build": "node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc",
     "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "TaxTrail backend (Node + TypeScript + LangChain)",
   "dependencies": {
     "@langchain/community": "^0.3.57",
     "@langchain/core": "^0.3.78",
@@ -18,7 +19,7 @@
     "@langchain/openai": "^0.6.14",
     "axios": "^1.12.2",
     "cors": "^2.8.5",
-    "dotenv": "16.4.5",
+    "dotenv": "^16.4.5",
     "express": "^5.1.0",
     "langchain": "^0.3.35",
     "node-appwrite": "^19.1.0",
@@ -31,6 +32,9 @@
     "@types/node": "^24.6.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

@@ -5,20 +5,47 @@ import { StructuredOutputParser } from "@langchain/core/output_parsers";
 import { z } from "zod";
 import { llm } from "./langchain";
 
-// Define schema for prediction
+// Define the shape of our prediction data
+interface PredictionResult {
+  nextYear: number;
+  nextYearPrediction: number;
+  confidence: number;
+  summary: string;
+}
+
+// Define schema for LLM output validation
 const predictionSchema = z.object({
   nextYear: z.number(),
-  nextYearPrediction: z.number(),
-  summary: z.string(),
+  nextYearPrediction: z.number().int(),
+  summary: z.string().max(400),
   confidence: z.number().min(0).max(1),
 });
 
-const parser = StructuredOutputParser.fromZodSchema(predictionSchema);
+interface Prediction {
+  nextYear: number;
+  nextYearPrediction: number;
+  confidence: number;
+}
+
+interface ChainInput {
+  data: string;
+  nextYear: number;
+  nextYearPrediction: number;
+  confidence: number;
+  format: string;
+}
+
+// ✅ 1. Explicitly type the schema output using z.infer
+type LLMPredictionOutput = z.infer<typeof predictionSchema>;
+
+// ✅ 2. Use StructuredOutputParser but cast schema to `any` to stop recursive type inference
+const parser: StructuredOutputParser<any> = 
+  StructuredOutputParser.fromZodSchema(predictionSchema as any);
 
 // ---- Improved Linear Regression (used as fallback) ----
 function calculateLinearRegressionPrediction(
   data: { year: number; amount: number }[]
-) {
+): PredictionResult {
   const n = data.length;
   const sumX = data.reduce((s, d) => s + d.year, 0);
   const sumY = data.reduce((s, d) => s + d.amount, 0);
@@ -56,7 +83,7 @@ function calculateLinearRegressionPrediction(
 // ---- LLM-Enhanced Prediction ----
 export async function predictBudgetTrend(
   historyData: { year: number; amount: number }[]
-) {
+): Promise<PredictionResult> {
   try {
     // Step 1: Always compute baseline numeric prediction
     const baseline = calculateLinearRegressionPrediction(historyData);
@@ -91,7 +118,7 @@ Return JSON:
       data: JSON.stringify(historyData),
       baseline: JSON.stringify(baseline),
       format: parser.getFormatInstructions(),
-    });
+    }) as LLMPredictionOutput;;
 
     // If LLM produces nonsense, use baseline
     if (!output?.nextYearPrediction || isNaN(output.nextYearPrediction)) {
@@ -112,11 +139,7 @@ Return JSON:
 
 // ---- Optional: Generate LLM Summary ----
 export async function generatePredictionSummary(
-  prediction: {
-    nextYear: number;
-    nextYearPrediction: number;
-    confidence: number;
-  },
+  prediction: Prediction,
   historyData: { year: number; amount: number }[]
 ) {
   try {
@@ -142,8 +165,10 @@ Generate a 2-3 sentence summary (under 450 characters) explaining the rationale 
       summary: z.string().min(30).max(450),
     });
 
-    const summaryParser = StructuredOutputParser.fromZodSchema(summarySchema);
-    const chain = RunnableSequence.from([prompt, llm, summaryParser]);
+const summaryParser: StructuredOutputParser<any> =
+  StructuredOutputParser.fromZodSchema(summarySchema as any);
+    // const chain = RunnableSequence.from([prompt, llm, summaryParser]);
+    const chain = RunnableSequence.from<ChainInput, any>([prompt, llm, summaryParser]);
 
     const result = await chain.invoke({
       data: JSON.stringify(historyData),

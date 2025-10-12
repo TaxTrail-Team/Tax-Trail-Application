@@ -4,7 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import styles from "../../styles/converterStyles";
 import { useNavigation } from "@react-navigation/native";
 import {
-  fetchCategories, fetchTaxes, fetchSymbols, convertFilters, agentConvert, UITax,
+  fetchCategories, fetchTaxes, fetchSymbols, convertFilters, agentConvert, UITax,fetchYears
 } from "../lib/api";
 import { currencyToFlag, codeToNiceName } from "../lib/currency";
 import Card from "../../components/ui/Card";
@@ -33,10 +33,13 @@ const navigation = useNavigation<any>();
   const [currencyModal, setCurrencyModal] = useState(false);
 
   const fmt = useMemo(() => new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }), []);
-  const years = useMemo(() => {
-    const now = new Date().getFullYear();
-    return Array.from({ length: 8 }, (_, i) => now - i);
-  }, []);
+  const [years, setYears] = useState<number[]>([]);
+
+useEffect(() => {
+  fetchYears()
+    .then(setYears)
+    .catch((e) => setErrorMsg(e?.message || "Failed to load years"));
+}, []);
   const uniqueAmounts = useMemo(() => {
     const s = Array.from(new Set(taxes.map(t => Number(t.amount)).filter(Number.isFinite)));
     return s.sort((a, b) => a - b);

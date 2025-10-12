@@ -14,4 +14,5 @@ const prompt = ChatPromptTemplate.fromMessages(
     new MessagesPlaceholder("agent_scratchpad"), ]); 
 
 export async function buildUserAgent(): Promise<AgentExecutor> { const agent = await createToolCallingAgent({ llm: llmWithTools, tools, prompt, }); 
-    return new AgentExecutor({ agent, tools, maxIterations: 4, returnIntermediateSteps: true, }); }
+    return new AgentExecutor({ agent, tools, maxIterations: 4, returnIntermediateSteps: true, }); 
+}
