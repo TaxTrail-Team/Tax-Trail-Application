@@ -23,6 +23,8 @@
     "express": "^5.1.0",
     "langchain": "^0.3.35",
     "node-appwrite": "^19.1.0",
+    "react": "^19.2.0",
+    "react-native": "^0.82.0",
     "serpapi": "^2.2.1",
     "zod": "^3.25.76"
   },

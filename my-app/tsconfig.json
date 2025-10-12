@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "noImplicitAny": false,
+    "jsx": "react-native",
     "paths": {
       "@/*": [
         "./*"
@@ -12,5 +13,5 @@
   "include": [
     "**/*.ts",
     "**/*.tsx"
-  ],
+  ]
 }

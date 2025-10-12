@@ -6,7 +6,8 @@ import axios from "axios";
 // export const SERVER = "https://tax-trail-application.onrender.com";
 export const SERVER = "http://192.168.238.254:3001";
 // https://tax-trail-application.onrender.com
-// http://192.168.1.4:3001
+//http:// 172.30.48.1:3001
+
 // Use a client with sane defaults + timeout.
 const api = axios.create({
   baseURL: SERVER,
@@ -43,9 +44,15 @@ export async function agentConvert(input: string) {
 
 // If your backend returns an array of strings, this is fine.
 export async function fetchCategories() {
-  const { data } = await api.get<string[]>("/categories");
-  console.log("[API] /categories =>", data);
-  return data;
+  try {
+    const { data } = await api.get<string[]>('/categories');
+    console.log('[API] /categories =>', data);
+    return Array.isArray(data) ? data : [];
+  } catch (e: any) {
+    console.log("[API] /categories error:", e?.message);
+    // Return an empty array so UI can show fallback categories and not crash.
+    return [] as string[];
+  }
 }
 
 /** UI tax shape (post-mapped on server) */
@@ -60,11 +67,15 @@ export type UITax = {
 };
 
 export async function fetchTaxes(params: {
-  category?: string;
-  year?: number;
+  category?: string | string[];
+  year?: number | number[];
   amount?: number;
 } = {}) {
-  const { data } = await api.get("/taxes", { params });
+  // If arrays are provided, serialize them to comma-separated strings for the server
+  const q: any = { ...params };
+  if (Array.isArray(params.category)) q.category = params.category.join(',');
+  if (Array.isArray(params.year)) q.year = params.year.join(',');
+  const { data } = await api.get("/taxes", { params: q });
   console.log("[API] /taxes raw =>", data);
   // Server already maps, but keep this defensive:
   const mapped: UITax[] = (Array.isArray(data) ? data : []).map((d: any) => ({
@@ -147,6 +158,81 @@ export async function fetchAllLiveRatesGoogle(params: {
     count: number;
     items: Array<{ target: string; rate: number; via: "google"; source?: string; rate_ts: string }>;
   };
+}
+
+// AI-Powered Anomaly Analysis
+export type AIAnomalyInsights = {
+  insights: Array<{
+    year: number;
+    explanation: string;
+    severity: "low" | "medium" | "high";
+    recommendedActions: string[];
+  }>;
+  overallTrend: string;
+  prediction: {
+    nextYear: number;
+    confidence: "low" | "medium" | "high";
+    reasoning: string;
+  };
+  keyFindings: string[];
+  risks: string[];
+  opportunities: string[];
+};
+
+export async function fetchAIAnomalyInsights(params: {
+  yearlyData: Array<{
+    year: number;
+    total: number;
+    count: number;
+    percentChange: number;
+    deviation: number;
+    isHighAnomaly: boolean;
+    isLowAnomaly: boolean;
+  }>;
+  mean: number;
+  deviationThreshold: number;
+  category?: string;
+}): Promise<AIAnomalyInsights> {
+  try {
+    console.log("[fetchAIAnomalyInsights] Sending request...");
+    console.log("[fetchAIAnomalyInsights] Params:", {
+      dataPoints: params.yearlyData.length,
+      mean: params.mean,
+      threshold: params.deviationThreshold,
+      category: params.category
+    });
+
+    const { data } = await api.post("/anomaly/ai-insights", params);
+    console.log("[fetchAIAnomalyInsights] Response received");
+    return data.insights;
+  } catch (error: any) {
+    console.error("[fetchAIAnomalyInsights] Error:", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.error || error.message || "AI analysis failed");
+  }
+}
+
+export async function fetchExecutiveSummary(params: {
+  yearlyData: Array<{ year: number; total: number; count: number }>;
+  mean: number;
+  topAnomalies: Array<{ year: number; type: string; deviation: number }>;
+  category?: string;
+}): Promise<string> {
+  try {
+    console.log("[fetchExecutiveSummary] Sending request...");
+    console.log("[fetchExecutiveSummary] Params:", {
+      dataPoints: params.yearlyData.length,
+      mean: params.mean,
+      anomalies: params.topAnomalies.length,
+      category: params.category
+    });
+
+    const { data } = await api.post("/anomaly/executive-summary", params);
+    console.log("[fetchExecutiveSummary] Response received");
+    return data.summary;
+  } catch (error: any) {
+    console.error("[fetchExecutiveSummary] Error:", error?.response?.data || error.message);
+    throw new Error(error?.response?.data?.error || error.message || "Summary generation failed");
+  }
 }
 
 
