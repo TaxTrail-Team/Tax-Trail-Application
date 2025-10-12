@@ -146,7 +146,7 @@ npm install
    PORT=3001
    NODE_ENV=development
 
-   # ⭐ REQUIRED: Groq API Key for AI Features
+   #  REQUIRED: Groq API Key for AI Features
    GROQ_API_KEY=gsk_your_actual_api_key_here
 
    # Appwrite Configuration
@@ -167,7 +167,7 @@ npm install
    - **Appwrite**: [Create project at appwrite.io](https://appwrite.io/)
    - **SerpAPI** (Optional): [Get key at serpapi.com](https://serpapi.com/)
 
-### **📱 Frontend Configuration**
+### ** Frontend Configuration**
 
 1. Update the API endpoint in `my-app/src/lib/api.ts`:
 
@@ -228,7 +228,7 @@ npm run ios
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 Tax-Trail-Application/
@@ -290,13 +290,13 @@ Tax-Trail-Application/
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### **Testing AI Features**
 
 1. Navigate to **Anomaly Viewer** tab in the app
 2. Load or create tax data
-3. Tap **"AI Insights"** (pink card with brain icon 🧠)
+3. Tap **"AI Insights"** (pink card with brain icon )
 4. Wait 5-10 seconds for AI analysis
 5. Review comprehensive insights and recommendations
 
@@ -310,7 +310,7 @@ Tax-Trail-Application/
 
 ---
 
-## 🔍 Troubleshooting
+##  Troubleshooting
 
 ### **Common Issues**
 
@@ -328,7 +328,7 @@ For comprehensive AI setup and troubleshooting, see: [`my-app/server/AI_SETUP_GU
 
 ---
 
-## 🎨 Features in Detail
+##  Features in Detail
 
 ### **Currency Converter**
 - Support for 150+ global currencies
@@ -360,7 +360,7 @@ For comprehensive AI setup and troubleshooting, see: [`my-app/server/AI_SETUP_GU
 
 ---
 
-## 🚦 API Endpoints
+##  API Endpoints
 
 ### **Tax Endpoints**
 
@@ -378,7 +378,7 @@ For comprehensive AI setup and troubleshooting, see: [`my-app/server/AI_SETUP_GU
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Here's how you can help:
 
@@ -407,13 +407,13 @@ We welcome contributions! Here's how you can help:
 
 ---
 
-## 📄 License
+##  License
 
 This project is licensed under the terms specified in the [LICENSE](./LICENSE) file.
 
 ---
 
-## 🌟 Acknowledgments
+##  Acknowledgments
 
 - **United Nations SDGs** for inspiring this project's mission
 - **Appwrite** for backend infrastructure
@@ -428,13 +428,13 @@ This project is licensed under the terms specified in the [LICENSE](./LICENSE) f
 
 For issues, questions, or suggestions:
 
-- 📧 Email: support@taxtrail.app *(example)*
+- 📧 Email: pandukawijesinghe@gmail.com 
 - 🐛 Issues: [GitHub Issues](https://github.com/yourusername/Tax-Trail-Application/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/yourusername/Tax-Trail-Application/discussions)
+
 
 ---
 
-## 🗺️ Roadmap
+##  Roadmap
 
 ### **Coming Soon**
 - [ ] Budget breakdown visualization
@@ -455,7 +455,7 @@ For issues, questions, or suggestions:
 
 ---
 
-## 🎯 SDG Alignment
+##  SDG Alignment
 
 This project directly contributes to **SDG 10: Reduced Inequalities** by:
 
@@ -469,7 +469,7 @@ This project directly contributes to **SDG 10: Reduced Inequalities** by:
 
 <div align="center">
 
-**Built with ❤️ for a more transparent and equitable world**
+**Built with for a more transparent and equitable world**
 
 ⭐ Star this repo if you found it helpful!
 
