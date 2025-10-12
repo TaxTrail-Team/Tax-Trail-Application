@@ -1,4 +1,4 @@
-# 🚀 Tax-Trail Application
+# Tax-Trail Application
 
 <div align="center">
 
@@ -16,34 +16,34 @@
 
 ---
 
-## 📖 About
+## About
 
 **Tax-Trail** is a modern mobile application designed to promote **Public Budget Transparency** in alignment with the United Nations Sustainable Development Goal (SDG) 10: **Reduced Inequalities**.
 
 The application empowers citizens to:
-- 💱 Convert and track tax-related currency transactions
-- 📊 Monitor live exchange rates for better financial planning
-- 🔍 Detect anomalies in financial data using AI-powered insights
-- 📈 Visualize budget trends and make informed decisions
-- 🤖 Get intelligent predictions and recommendations from AI analysis
+- Convert and track tax-related currency transactions
+- Monitor live exchange rates for better financial planning
+- Detect anomalies in financial data using AI-powered insights
+- Visualize budget trends and make informed decisions
+- Get intelligent predictions and recommendations from AI analysis
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🌟 **Core Features**
+###  **Core Features**
 
 | Feature | Description |
 |---------|-------------|
-| **🔐 Secure Authentication** | Email/password authentication with Google OAuth integration powered by Appwrite |
-| **💱 Currency Converter** | Real-time multi-currency conversion with support for 150+ currencies |
-| **📊 Live Exchange Rates** | Track live rate changes and trends with visual charts |
-| **🔍 AI-Powered Anomaly Detection** | Intelligent anomaly detection using LangChain + Groq (Llama 3.3-70B) |
-| **📈 Executive Summaries** | Generate professional AI-powered financial reports |
-| **👤 Profile Management** | Personalized user profiles with image upload support |
-| **🎨 Modern UI/UX** | Beautiful, intuitive interface with smooth animations |
+| ** Secure Authentication** | Email/password authentication with Google OAuth integration powered by Appwrite |
+| ** Currency Converter** | Real-time multi-currency conversion with support for 150+ currencies |
+| ** Live Exchange Rates** | Track live rate changes and trends with visual charts |
+| ** AI-Powered Anomaly Detection** | Intelligent anomaly detection using LangChain + Groq (Llama 3.3-70B) |
+| ** Executive Summaries** | Generate professional AI-powered financial reports |
+| ** Profile Management** | Personalized user profiles with image upload support |
+| ** Modern UI/UX** | Beautiful, intuitive interface with smooth animations |
 
-### 🤖 **AI-Powered Intelligence**
+###  **AI-Powered Intelligence**
 
 - **Anomaly Analysis**: Automatically detects unusual patterns in financial data
 - **Predictive Insights**: Forecasts future trends with confidence levels
@@ -53,7 +53,7 @@ The application empowers citizens to:
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 ### **Frontend (Mobile App)**
 ```
@@ -81,7 +81,7 @@ The application empowers citizens to:
 
 ---
 
-## 📋 Prerequisites
+##  Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -95,7 +95,7 @@ Before you begin, ensure you have the following installed:
 
 ---
 
-## 🚀 Installation
+##  Installation
 
 ### **1️⃣ Clone the Repository**
 
@@ -185,9 +185,9 @@ npm install
 
 ---
 
-## 🎯 Running the Application
+##  Running the Application
 
-### **🖥️ Start the Backend Server**
+### ** Start the Backend Server**
 
 ```bash
 cd my-app/server
@@ -205,7 +205,7 @@ You should see:
 Server running on :3001
 ```
 
-### **📱 Start the Mobile App**
+### ** Start the Mobile App**
 
 In a new terminal:
 
