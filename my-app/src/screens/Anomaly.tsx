@@ -69,7 +69,36 @@ const ShimmerPlaceholder = ({ width = "100%", height = 20, style = {} }: any) =>
         style,
       ]}
     >
-     
+      <Animated.View
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(255, 255, 255, 0.5)",
+          transform: [{ translateX }],
+        }}
+      />
+    </View>
+  );
+};
+
+type YearData = {
+  year: number;
+  total: number;
+  count: number;
+  percentChange: number;
+  deviation: number;
+  isHighAnomaly: boolean;
+  isLowAnomaly: boolean;
+};
+
+type TopAnomaly = {
+  year: number;
+  type: "high" | "low";
+  title: string;
+  description: string;
+  deviation: number;
+};
+
 export default function Anomaly() {
   const [taxes, setTaxes] = useState<UITax[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
