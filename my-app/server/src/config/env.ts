@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 
+
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 
@@ -17,4 +18,5 @@ export const ENV = {
   APPWRITE_TAXES_COLLECTION_ID: process.env.APPWRITE_TAXES_COLLECTION_ID || "",
 
   SERPAPI_API_KEY: process.env.SERPAPI_API_KEY || "",
+
 };
