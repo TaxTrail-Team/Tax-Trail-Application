@@ -3,7 +3,8 @@ import axios from "axios";
 
 // 1) Make sure this is your machine's LAN IP the phone can reach.
 //    Try `ipconfig` (Windows) or `ifconfig` (Mac) and pick the Wi-Fi IPv4.
-export const SERVER = "https://tax-trail-application.onrender.com";
+// export const SERVER = "https://tax-trail-application.onrender.com";
+export const SERVER = "http://192.168.238.254:3001";
 // https://tax-trail-application.onrender.com
 // http://192.168.1.4:3001
 // Use a client with sane defaults + timeout.
