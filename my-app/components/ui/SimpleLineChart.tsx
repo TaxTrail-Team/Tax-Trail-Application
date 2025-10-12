@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, Animated, TouchableOpacity } from 'react-native';
+import Svg, { Path, Defs, LinearGradient, Stop, Rect, G, Circle, Line } from 'react-native-svg';
 import { theme } from '../../theme';
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface DataPoint {
-  month: string;
+  label: string; // month/year label
   value: number;
 }
 
@@ -12,224 +14,328 @@ interface SimpleLineChartProps {
   height?: number;
 }
 
-export default function SimpleLineChart({ data, height = 200 }: SimpleLineChartProps) {
+// Catmull-Rom to Bezier conversion for smooth curves
+function catmullRom2bezier(points: { x: number; y: number }[]) {
+  const cr = (pts: { x: number; y: number }[]) => {
+    const d = [] as string[];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i === 0 ? i : i - 1];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
+
+      const bp1x = p1.x + (p2.x - p0.x) / 6;
+      const bp1y = p1.y + (p2.y - p0.y) / 6;
+      const bp2x = p2.x - (p3.x - p1.x) / 6;
+      const bp2y = p2.y - (p3.y - p1.y) / 6;
+
+      if (i === 0) {
+        d.push(`M ${p1.x} ${p1.y}`);
+      }
+      d.push(`C ${bp1x} ${bp1y}, ${bp2x} ${bp2y}, ${p2.x} ${p2.y}`);
+    }
+    return d.join(' ');
+  };
+
+  return cr(points);
+}
+
+export default function SimpleLineChart({ data, height = 260 }: SimpleLineChartProps) {
+  const fade = useRef(new Animated.Value(0)).current;
+  const [range, setRange] = useState<'1Y' | '3Y'>('1Y');
+  const [activeTooltip, setActiveTooltip] = useState<number | null>(null);
+  const [displayData, setDisplayData] = useState<DataPoint[]>(data);
+  const [isLoading, setIsLoading] = useState(false);
+  const animProgress = useRef(new Animated.Value(0)).current; // animate redraw
+
+  useEffect(() => {
+    Animated.timing(fade, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+  }, [fade]);
+
   if (!data || data.length === 0) {
     return (
-      <View style={[styles.container, { height }]}>
+      <View style={[styles.card, { height }]}>
         <Text style={styles.noDataText}>No data available</Text>
       </View>
     );
   }
 
-  const maxValue = Math.max(...data.map(d => d.value));
-  const minValue = Math.min(...data.map(d => d.value));
-  const range = maxValue - minValue;
+  const width = Dimensions.get('window').width - 48; // card padding + some margin
+  const padding = { top: 24, bottom: 48, left: 40, right: 16 };
+  const chartW = width - padding.left - padding.right;
+  const chartH = height - padding.top - padding.bottom;
 
-  // Generate Y-axis labels (5 levels: 0, 25%, 50%, 75%, 100%)
-  const yLabels = [0, maxValue * 0.25, maxValue * 0.5, maxValue * 0.75, maxValue];
+  const values = displayData.map((d) => d.value);
+  const max = Math.max(...values) || 0;
+  const min = Math.min(...values) || 0;
+  const pad = (max - min) * 0.1 || max * 0.1;
+  const yMax = Math.ceil((max + pad) / 1000) * 1000;
+  const yMin = Math.max(0, Math.floor((min - pad) / 1000) * 1000);
+  const yRange = yMax - yMin || 1;
 
-  // Chart dimensions
-  const chartHeight = height - 80; // Account for padding and x-axis
-  const chartWidth = Dimensions.get('window').width - 100; // Account for y-axis and padding
+  // map data points to SVG coordinates
+  const points = displayData.map((d, i) => {
+    const x = padding.left + (i / Math.max(1, data.length - 1)) * chartW;
+    const y = padding.top + ((yMax - d.value) / yRange) * chartH;
+    return { x, y };
+  });
 
-  return (
-    <View style={[styles.container, { height }]}>
-      {/* Y-axis labels */}
-      <View style={styles.yAxis}>
-        {yLabels.map((label, index) => (
-          <Text key={index} style={styles.yLabel}>
-            {label >= 1000 ? `${(label / 1000).toFixed(0)}k` : Math.round(label).toString()}
-          </Text>
-        ))}
-      </View>
+  const path = catmullRom2bezier(points);
 
-      {/* Chart area */}
-      <View style={styles.chartArea}>
-        {/* Grid lines */}
-        {yLabels.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.gridLine,
-              { top: (index / (yLabels.length - 1)) * chartHeight + 30 }
-            ]}
-          />
-        ))}
+  const areaPath = `${path} L ${padding.left + chartW} ${padding.top + chartH} L ${padding.left} ${padding.top + chartH} Z`;
 
-        {/* Data points and curve */}
-        <View style={styles.dataContainer}>
-          {data.map((point, index) => {
-            const x = (index / (data.length - 1)) * (chartWidth - 60) + 30;
-            const y = range > 0 
-              ? ((maxValue - point.value) / range) * chartHeight + 30 
-              : chartHeight / 2 + 30;
-            
-            return (
-              <View key={index}>
-                {/* Tooltip */}
-                <View style={[styles.tooltip, { left: x - 25, top: y - 45 }]}>
-                  <Text style={styles.tooltipText}>${point.value.toLocaleString()}</Text>
-                </View>
-                
-                {/* Data point */}
-                <View
+  const yTicks = 4;
+  const yLabels = Array.from({ length: yTicks + 1 }, (_, i) => yMin + (yRange * i) / yTicks).reverse();
+
+  // animate entry
+  useEffect(() => {
+    Animated.timing(fade, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+  }, [fade]);
+    // Aggregation helpers
+    function last12Months(raw: DataPoint[]) {
+      const slice = raw.slice(-12);
+      return slice.map((d) => ({ ...d }));
+    }
+
+    function aggregateQuarterly(raw: DataPoint[]) {
+      const months = raw.slice(-36);
+      if (months.length === 0) return raw;
+      const quarters: { label: string; value: number }[] = [];
+      for (let i = 0; i < months.length; i += 3) {
+        const chunk = months.slice(i, i + 3);
+        const sum = chunk.reduce((s, c) => s + c.value, 0);
+        const lab = chunk[chunk.length - 1].label;
+        quarters.push({ label: lab, value: Math.round(sum) });
+      }
+      return quarters;
+    }
+
+    // yearly aggregation removed — 5Y option disabled
+
+    useEffect(() => {
+      let mounted = true;
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        if (!mounted) return;
+        let next: DataPoint[] = data;
+  if (range === '1Y') next = last12Months(data);
+  if (range === '3Y') next = aggregateQuarterly(data);
+        setDisplayData(next.length > 0 ? next : data);
+        animProgress.setValue(0);
+        Animated.timing(animProgress, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+        setIsLoading(false);
+      }, 300);
+
+      return () => {
+        mounted = false;
+        clearTimeout(timer);
+      };
+    }, [range, data]);
+
+    return (
+      <Animated.View style={[styles.card, { height, opacity: fade }]}> 
+        <View style={styles.topRightControls} pointerEvents="box-none">
+          <View style={styles.rangeRow}>
+            {(['1Y', '3Y'] as const).map((r) => {
+              const active = range === r;
+              return (
+                <AnimatedTouchable
+                  key={r}
+                  activeOpacity={0.9}
+                  onPress={() => setRange(r)}
                   style={[
-                    styles.dataPoint,
-                    { left: x - 4, top: y - 4 }
+                    styles.rangeButton, 
+                    active ? styles.rangeButtonActive : styles.rangeButtonInactive,
+                    { transform: [{ scale: active ? 1.05 : 1 }] }
                   ]}
-                />
-              </View>
-            );
-          })}
-
-          {/* Curve connecting points */}
-          {data.slice(0, -1).map((_, index) => {
-            const x1 = (index / (data.length - 1)) * (chartWidth - 60) + 30;
-            const y1 = range > 0 
-              ? ((maxValue - data[index].value) / range) * chartHeight + 30 
-              : chartHeight / 2 + 30;
-            const x2 = ((index + 1) / (data.length - 1)) * (chartWidth - 60) + 30;
-            const y2 = range > 0 
-              ? ((maxValue - data[index + 1].value) / range) * chartHeight + 30 
-              : chartHeight / 2 + 30;
-            
-            const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-            const distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-            
-            return (
-              <View
-                key={index}
-                style={[
-                  styles.curve,
-                  {
-                    left: x1,
-                    top: y1,
-                    width: distance,
-                    transform: [{ rotate: `${angle}deg` }]
-                  }
-                ]}
-              />
-            );
-          })}
+                >
+                  <Text style={[styles.rangeText, active && styles.rangeTextActive]}>{r}</Text>
+                </AnimatedTouchable>
+              );
+            })}
+          </View>
         </View>
 
-        {/* X-axis labels */}
-        <View style={styles.xAxis}>
-          {data.map((point, index) => (
-            <Text key={index} style={styles.xLabel}>
-              {point.month}
-            </Text>
+      <Svg width={width} height={height}>
+        <Defs>
+          <LinearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor="#d1fae5" stopOpacity="0.5" />
+            <Stop offset="100%" stopColor="#d1fae5" stopOpacity="0.05" />
+          </LinearGradient>
+          <LinearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+            <Stop offset="0%" stopColor="#16a34a" stopOpacity="1" />
+            <Stop offset="100%" stopColor="#06b6d4" stopOpacity="1" />
+          </LinearGradient>
+        </Defs>
+
+        {/* background grid */}
+        {yLabels.map((val, idx) => {
+          const y = padding.top + (idx / yTicks) * chartH;
+          return (
+            <Line key={idx} x1={padding.left} x2={padding.left + chartW} y1={y} y2={y} stroke={theme.color.border + '40'} strokeWidth={1} />
+          );
+        })}
+
+        {/* area fill */}
+        <Path d={areaPath} fill="url(#grad)" />
+
+  {/* line */}
+  <Path d={path} fill="none" stroke="url(#lineGrad)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+
+        {/* markers */}
+        <G>
+          {points.map((p, i) => (
+            <G key={`pt-${i}`}>
+              <Circle
+                cx={p.x}
+                cy={p.y}
+                r={6}
+                fill="#ffffff"
+                stroke={theme.color.danger}
+                strokeWidth={3}
+                onPress={() => setActiveTooltip(i === activeTooltip ? null : i)}
+              />
+              <Circle cx={p.x} cy={p.y} r={3} fill={theme.color.danger} />
+            </G>
+          ))}
+        </G>
+
+        {/* x-axis labels (show a subset if too many) */}
+        {data.map((d, i) => {
+          const show = data.length <= 8 || i % Math.ceil(data.length / 8) === 0 || i === data.length - 1;
+          if (!show) return null;
+          const x = padding.left + (i / Math.max(1, data.length - 1)) * chartW;
+          const y = padding.top + chartH + 16;
+          return (
+            <TextSVG key={`xl-${i}`} x={x} y={y} fontSize={10} fill={theme.color.text} textAnchor="middle">
+              {d.label}
+            </TextSVG>
+          );
+        })}
+
+        {/* y-axis labels as text using SVG Text is less flexible; render using overlay below SVG */}
+      </Svg>
+
+      {/* Overlay: Y labels and tooltips and bottom note */}
+      <View style={styles.overlay} pointerEvents="box-none">
+        <View style={styles.yLabelCol}>
+          {yLabels.map((val, idx) => (
+            <Text key={idx} style={styles.yLabel}>{`${Math.round(val / 1000)}K`}</Text>
           ))}
         </View>
+
+        {/* tooltips */}
+        {activeTooltip != null && (() => {
+          const p = points[activeTooltip];
+          const d = data[activeTooltip];
+          return (
+            <View key={`tt-${activeTooltip}`} style={[styles.tooltip, { left: p.x - 50, top: p.y - 60 }]}>
+              <Text style={styles.tooltipText}>{d.label}</Text>
+              <Text style={styles.tooltipValue}>LKR {d.value.toLocaleString()}</Text>
+            </View>
+          );
+        })()}
+
+        <View style={styles.bottomNoteRow}>
+          <Text style={styles.note}>💡 Values shown in thousands (K) LKR</Text>
+        </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
+// Helper component: render SVG Text using a small wrapper to avoid import issues with types
+const TextSVG = ({ x, y, children, fontSize = 10, fill = '#000', textAnchor = 'start' }: any) => (
+  // @ts-ignore - JSX for react-native-svg Text
+  <SvgText x={x} y={y} fontSize={fontSize} fill={fill} textAnchor={textAnchor}>{children}</SvgText>
+);
+
+// Import SvgText dynamically (avoid top-level type import issues)
+const { Text: SvgText } = require('react-native-svg') as any;
+
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
+  card: {
     backgroundColor: theme.color.card,
     borderRadius: theme.radius.md,
-    padding: 16,
+    padding: 12,
     marginVertical: 8,
-    minHeight: 200,
-  },
-  yAxis: {
-    width: 50,
-    justifyContent: 'space-between',
-    paddingVertical: 30,
-  },
-  yLabel: {
-    fontSize: 12,
-    color: theme.color.text,
-    opacity: 0.7,
-    textAlign: 'right',
-    fontWeight: '500',
-  },
-  chartArea: {
-    flex: 1,
-    position: 'relative',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 8,
-    marginLeft: 8,
-  },
-  gridLine: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: theme.color.border + '40',
-  },
-  dataContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 40,
-  },
-  curve: {
-    position: 'absolute',
-    height: 3,
-    backgroundColor: theme.color.pill,
-    opacity: 0.9,
-    borderRadius: 1.5,
-  },
-  dataPoint: {
-    position: 'absolute',
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: theme.color.pill,
-    borderWidth: 3,
-    borderColor: '#ffffff',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+    overflow: 'hidden'
   },
+  noDataText: {
+    color: theme.color.text,
+    opacity: 0.6,
+    textAlign: 'center',
+    marginTop: 40
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8
+  },
+  modeButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: theme.color.border + '50'
+  },
+  modeButtonActive: {
+    backgroundColor: '#16a34a',
+  },
+  modeButtonText: {
+    color: theme.color.text,
+    fontWeight: '700'
+  },
+  modeButtonTextActive: {
+    color: '#ffffff'
+  },
+  rangeButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.color.border + '40',
+    backgroundColor: 'transparent'
+  },
+  rangeButtonActive: {
+    backgroundColor: '#22c55e'
+  },
+  rangeButtonInactive: {
+    backgroundColor: 'transparent',
+    borderColor: theme.color.border,
+    borderWidth: 1
+  },
+  topRightControls: { position: 'absolute', right: 12, top: 12, zIndex: 10 },
+  rangeRow: { flexDirection: 'row', gap: 10, alignItems: 'center' },
+  rangeText: { color: theme.color.text, fontWeight: '700' },
+  rangeTextActive: { color: '#fff' },
+  overlay: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
+  yLabelCol: { position: 'absolute', left: 8, top: 24, bottom: 48, justifyContent: 'space-between' },
+  yLabel: { fontSize: 12, color: theme.color.text, opacity: 0.7, textAlign: 'left' },
   tooltip: {
     position: 'absolute',
     backgroundColor: '#ffffff',
     paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
+    paddingVertical: 8,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: theme.color.border,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 5,
-    minWidth: 60,
-    alignItems: 'center',
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 6,
+    width: 100,
+    alignItems: 'center'
   },
-  tooltipText: {
-    fontSize: 11,
-    color: theme.color.text,
-    fontWeight: '700',
-  },
-  xAxis: {
-    position: 'absolute',
-    bottom: 10,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 30,
-  },
-  xLabel: {
-    fontSize: 12,
-    color: theme.color.text,
-    opacity: 0.7,
-    fontWeight: '500',
-  },
-  noDataText: {
-    fontSize: 14,
-    color: theme.color.text,
-    opacity: 0.5,
-    textAlign: 'center',
-    marginTop: 50,
-  },
+  tooltipText: { fontSize: 11, color: theme.color.text, opacity: 0.7 },
+  tooltipValue: { fontSize: 13, color: theme.color.pill, fontWeight: '800', marginTop: 4 },
+  bottomNoteRow: { position: 'absolute', left: 12, right: 12, bottom: 8, alignItems: 'center' },
+  note: { fontSize: 12, color: theme.color.text, opacity: 0.7 }
 });

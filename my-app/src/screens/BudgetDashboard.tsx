@@ -66,10 +66,10 @@ export default function BudgetDashboard() {
   const graphData = useMemo(() => {
     if (!items || items.length === 0) {
       return [
-        { month: 'Jan', value: 0 },
-        { month: 'Feb', value: 0 },
-        { month: 'Mar', value: 0 },
-        { month: 'Apr', value: 0 },
+        { label: 'Jan', value: 0 },
+        { label: 'Feb', value: 0 },
+        { label: 'Mar', value: 0 },
+        { label: 'Apr', value: 0 },
       ];
     }
 
@@ -94,7 +94,7 @@ export default function BudgetDashboard() {
       const value = monthlyData[monthKey] || Math.floor(Math.random() * 1000) + 100; // Fallback to random data for demo
       
       return {
-        month,
+        label: `${currentYear}-${String(monthIndex).padStart(2, '0')}`,
         value: Math.round(value)
       };
     });
@@ -150,7 +150,7 @@ export default function BudgetDashboard() {
       >
         {/* Header */}
         <Text style={{ fontSize: 24, fontWeight: '800', color: theme.color.pill }}>Budget Dashboard</Text>
-        <Text style={{ marginTop: 6, color: theme.color.text, opacity: 0.7 }}>Quick view of your taxes (mock data)</Text>
+        <Text style={{ marginTop: 6, color: theme.color.text, opacity: 0.7 }}>Quick view of your taxes </Text>
 
         {/* Line Graph Section */}
         <View style={{ marginTop: 20 }}>

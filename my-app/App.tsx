@@ -65,8 +65,8 @@ function TabsNav() {
     }}
   />
   <Tabs.Screen
-    name="budget br"
-    children={() => <Placeholder title="More 1" />}
+    name="Budget Breakdown"
+    component={BudgetDashboard}
     options={{
       tabBarIcon: ({ focused }) => (
         <Image
