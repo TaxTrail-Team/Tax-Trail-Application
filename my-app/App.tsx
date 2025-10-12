@@ -27,8 +27,37 @@ import profile from './src/assets/profile.png';
 
 
 
+import PredictionScreen from "./src/screens/PredictionScreen";
+import SummaryScreen from "./src/screens/SummaryScreen";
+import { RootStackParamList } from './src/types/navigation';
+
 const Stack = createNativeStackNavigator();
 const Tabs = createBottomTabNavigator();
+const Stack2 = createNativeStackNavigator<RootStackParamList>();
+
+// NEW CODE
+const PredictionStack = createNativeStackNavigator();
+
+function PredictionStackNavigator() {
+  return (
+    <PredictionStack.Navigator>
+      <PredictionStack.Screen
+        name="PredictionScreen"
+        component={PredictionScreen}
+        options={{ headerShown: false }}
+      />
+      <PredictionStack.Screen
+        name="SummaryScreen"
+        component={SummaryScreen}
+        options={{
+          presentation: "modal",
+          headerShown: true,
+          title: "AI Summary",
+        }}
+      />
+    </PredictionStack.Navigator>
+  );
+}
 
 function TabsNav() {
   const Placeholder = ({ title }: { title: string }) => (
@@ -88,9 +117,12 @@ function TabsNav() {
       ),
     }}
   />
+  {/* OLD CODE */}
+  {/* <Tabs.Screen name="Predictions" component={PredictionScreen} />
+      <Stack2.Screen name="SummaryScreen" component={SummaryScreen} options={{ presentation: "modal", headerShown: true }}/> */}
   <Tabs.Screen
     name="prediction"
-    children={() => <Placeholder title="More 3" />}
+    component={PredictionStackNavigator}
     options={{
       tabBarIcon: ({ focused }) => (
         <Image
