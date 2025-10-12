@@ -14,8 +14,13 @@ import Profile from './src/screens/Profile';
 import Converter from './src/screens/Converter';
 import LiveRates from './src/screens/LiveRates';
 
+import PredictionScreen from "./src/screens/PredictionScreen";
+import SummaryScreen from "./src/screens/SummaryScreen";
+import { RootStackParamList } from './src/types/navigation';
+
 const Stack = createNativeStackNavigator();
 const Tabs = createBottomTabNavigator();
+const Stack2 = createNativeStackNavigator<RootStackParamList>();
 
 function TabsNav() {
   const Placeholder = ({ title }: { title: string }) => (
@@ -26,10 +31,11 @@ function TabsNav() {
 
   return (
     <Tabs.Navigator>
-      <Tabs.Screen name="Home" component={Home} />
+      {/* <Tabs.Screen name="Home" component={Home} /> */}
       <Tabs.Screen name="Profile" component={Profile} />
-      <Tabs.Screen name="Converter" component={Converter} />
-      <Tabs.Screen name="More1">{() => <Placeholder title="More 1" />}</Tabs.Screen>
+      {/* <Tabs.Screen name="Converter" component={Converter} /> */}
+      <Tabs.Screen name="Predictions" component={PredictionScreen} />
+      <Stack2.Screen name="SummaryScreen" component={SummaryScreen} options={{ presentation: "modal", headerShown: true }}/>
       <Tabs.Screen name="More2">{() => <Placeholder title="More 2" />}</Tabs.Screen>
       <Tabs.Screen name="More3">{() => <Placeholder title="More 3" />}</Tabs.Screen>
     </Tabs.Navigator>

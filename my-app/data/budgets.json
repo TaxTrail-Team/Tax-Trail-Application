@@ -1,0 +1,12 @@
+[
+  { "sector": "Education", "year": 2019, "amount": 300000 },
+  { "sector": "Education", "year": 2020, "amount": 340000 },
+  { "sector": "Education", "year": 2021, "amount": 370000 },
+  { "sector": "Education", "year": 2022, "amount": 410000 },
+  { "sector": "Education", "year": 2023, "amount": 460000 },
+  { "sector": "Health", "year": 2019, "amount": 400000 },
+  { "sector": "Health", "year": 2020, "amount": 420000 },
+  { "sector": "Health", "year": 2021, "amount": 470000 },
+  { "sector": "Health", "year": 2022, "amount": 500000 },
+  { "sector": "Health", "year": 2023, "amount": 560000 }
+]
