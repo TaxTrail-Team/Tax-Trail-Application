@@ -12,9 +12,7 @@ app.use(express.json());
 // Health first
 app.get("/health", (_req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
-// Domain routes
-app.use(fxRouter);
-app.use(taxesRouter);
+
 
 // Start
 const PORT = Number(process.env.PORT || 3001);
