@@ -13,6 +13,7 @@ import Home from './src/screens/Home';
 import Profile from './src/screens/Profile';
 import Converter from './src/screens/Converter';
 import LiveRates from './src/screens/LiveRates';
+import Anomaly from './src/screens/Anomaly';
 import home from './src/assets/home.png';
 import converter from './src/assets/converter.png';
 import budget from './src/assets/budget.png';
@@ -70,8 +71,8 @@ function TabsNav() {
     }}
   />
   <Tabs.Screen
-    name="anomaly"
-    children={() => <Placeholder title="More 2" />}
+    name="Anomaly Viewer"
+    component={Anomaly}
     options={{
       tabBarIcon: ({ focused }) => (
         <Image
