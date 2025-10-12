@@ -120,9 +120,9 @@ npm install
 
 ---
 
-## ⚙️ Configuration
+##  Configuration
 
-### **🔧 Backend Configuration**
+### ** Backend Configuration**
 
 1. **Create Environment File**
 
@@ -409,7 +409,7 @@ We welcome contributions! Here's how you can help:
 
 ##  License
 
-This project is licensed under the terms specified in the [LICENSE](./LICENSE) file.
+This project is licensed under the terms specified in the MIT License Copyright (c) 2025 TaxTrail Team.
 
 ---
 
@@ -424,12 +424,12 @@ This project is licensed under the terms specified in the [LICENSE](./LICENSE) f
 
 ---
 
-## 📞 Support
+##  Support
 
 For issues, questions, or suggestions:
 
-- 📧 Email: pandukawijesinghe@gmail.com 
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/Tax-Trail-Application/issues)
+-  Email: pandukawijesinghe@gmail.com 
+-  Issues: [GitHub Issues](https://github.com/yourusername/Tax-Trail-Application/issues)
 
 
 ---
