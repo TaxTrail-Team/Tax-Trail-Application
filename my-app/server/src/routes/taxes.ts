@@ -6,6 +6,7 @@ import { mapDoc } from "../types/tax";
 import { getFxRate } from "../utils/fx";
 import { ENV } from "../config/env";
 import { buildUserAgent } from "../agents/agent";
+import { analyzeAnomaliesWithAI, generateExecutiveSummary } from "../llm/langchain";
 
 const router = Router();
 
@@ -116,6 +117,93 @@ router.get("/years", async (_req, res) => {
     res.json(uniqueYears);
   } catch (e: any) {
     res.status(500).json({ error: e?.message || "Failed to fetch years" });
+  }
+});
+
+// /anomaly/ai-insights - AI-powered anomaly analysis
+router.post("/anomaly/ai-insights", async (req, res) => {
+  console.log("[/anomaly/ai-insights] Request received");
+  console.log("Body keys:", Object.keys(req.body));
+
+  try {
+    const { yearlyData, mean, deviationThreshold, category } = req.body;
+
+    // Validation with detailed errors
+    if (!yearlyData) {
+      console.error("[/anomaly/ai-insights] Missing yearlyData");
+      return res.status(400).json({ error: "yearlyData is required", received: typeof yearlyData });
+    }
+
+    if (!Array.isArray(yearlyData)) {
+      console.error("[/anomaly/ai-insights] yearlyData is not an array:", typeof yearlyData);
+      return res.status(400).json({ error: "yearlyData must be an array", received: typeof yearlyData });
+    }
+
+    if (yearlyData.length === 0) {
+      console.error("[/anomaly/ai-insights] yearlyData is empty");
+      return res.status(400).json({ error: "yearlyData array is empty" });
+    }
+
+    if (typeof mean !== "number") {
+      console.error("[/anomaly/ai-insights] Invalid mean:", mean);
+      return res.status(400).json({ error: "mean must be a number", received: typeof mean });
+    }
+
+    console.log("[/anomaly/ai-insights] Calling AI analysis...");
+    const insights = await analyzeAnomaliesWithAI({
+      yearlyData,
+      mean,
+      deviationThreshold: deviationThreshold || 50,
+      category,
+    });
+
+    console.log("[/anomaly/ai-insights] AI analysis successful");
+    res.json({ insights });
+  } catch (error: any) {
+    console.error("[/anomaly/ai-insights] Error:", error);
+    console.error("[/anomaly/ai-insights] Stack:", error?.stack);
+    res.status(500).json({
+      error: error?.message || "AI analysis failed",
+      details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+    });
+  }
+});
+
+// /anomaly/executive-summary - Generate executive summary
+router.post("/anomaly/executive-summary", async (req, res) => {
+  console.log("[/anomaly/executive-summary] Request received");
+  console.log("Body keys:", Object.keys(req.body));
+
+  try {
+    const { yearlyData, mean, topAnomalies, category } = req.body;
+
+    if (!yearlyData) {
+      console.error("[/anomaly/executive-summary] Missing yearlyData");
+      return res.status(400).json({ error: "yearlyData is required" });
+    }
+
+    if (!Array.isArray(yearlyData)) {
+      console.error("[/anomaly/executive-summary] yearlyData is not an array:", typeof yearlyData);
+      return res.status(400).json({ error: "yearlyData must be an array", received: typeof yearlyData });
+    }
+
+    console.log("[/anomaly/executive-summary] Generating summary...");
+    const summary = await generateExecutiveSummary({
+      yearlyData,
+      mean: mean || 0,
+      topAnomalies: topAnomalies || [],
+      category,
+    });
+
+    console.log("[/anomaly/executive-summary] Summary generated successfully");
+    res.json({ summary });
+  } catch (error: any) {
+    console.error("[/anomaly/executive-summary] Error:", error);
+    console.error("[/anomaly/executive-summary] Stack:", error?.stack);
+    res.status(500).json({
+      error: error?.message || "Summary generation failed",
+      details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+    });
   }
 });
 

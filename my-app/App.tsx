@@ -13,12 +13,18 @@ import Home from './src/screens/Home';
 import Profile from './src/screens/Profile';
 import Converter from './src/screens/Converter';
 import LiveRates from './src/screens/LiveRates';
+
+import BudgetDashboard from './src/screens/BudgetDashboard';
+import BudgetFilter from './src/screens/BudgetFilter';
+import CategoryOverview from './src/screens/CategoryOverview';
+import Anomaly from './src/screens/Anomaly';
 import home from './src/assets/home.png';
 import converter from './src/assets/converter.png';
 import budget from './src/assets/budget.png';
 import anomaly from './src/assets/anomaly.png';
 import prediction from './src/assets/prediction.png';
 import profile from './src/assets/profile.png';
+
 
 
 import PredictionScreen from "./src/screens/PredictionScreen";
@@ -61,6 +67,7 @@ function TabsNav() {
   );
 
   return (
+
    <Tabs.Navigator screenOptions={{ headerShown: true }}>
   {/* <Tabs.Screen
     name="Home"
@@ -99,8 +106,8 @@ function TabsNav() {
     }}
   />
   <Tabs.Screen
-    name="anomaly"
-    children={() => <Placeholder title="More 2" />}
+    name="Anomaly Viewer"
+    component={Anomaly}
     options={{
       tabBarIcon: ({ focused }) => (
         <Image
@@ -139,6 +146,7 @@ function TabsNav() {
   />
 </Tabs.Navigator>
 
+
   );
 }
 
@@ -173,11 +181,21 @@ export default function App() {
           <>
             {/* Tabs at the bottom */}
             <Stack.Screen name="Tabs" component={TabsNav} />
-            {/* LiveRates sits in the ROOT stack so any tab can push it */}
+            {/* Extra screens on ROOT stack so any tab can push them */}
             <Stack.Screen
               name="LiveRates"
               component={LiveRates}
               options={{ headerShown: true, title: 'Live Rate Changes' }}
+            />
+            <Stack.Screen
+              name="BudgetFilter"
+              component={BudgetFilter}
+              options={{ headerShown: true, title: 'Filters' }}
+            />
+            <Stack.Screen
+              name="CategoryOverview"
+              component={CategoryOverview}
+              options={{ headerShown: true, title: 'Overview' }}
             />
           </>
         )}
